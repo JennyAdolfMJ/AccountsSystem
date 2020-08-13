@@ -14,7 +14,7 @@ namespace ExpenseAccount
     {
         public ExpenseDBContext() : base(new SQLiteConnection()
         {
-            ConnectionString = new SQLiteConnectionStringBuilder() { DataSource = @"D:\jenny.db" }.ConnectionString
+            ConnectionString = new SQLiteConnectionStringBuilder() { DataSource = @"AccountsSystem.db" }.ConnectionString
         }, true)
         { }
 
