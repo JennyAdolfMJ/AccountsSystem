@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountsSystem", "AccountsSystem\AccountsSystem.csproj", "{9DF9920C-07AE-4C02-8256-886160E8480D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9DF9920C-07AE-4C02-8256-886160E8480D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DF9920C-07AE-4C02-8256-886160E8480D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DF9920C-07AE-4C02-8256-886160E8480D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DF9920C-07AE-4C02-8256-886160E8480D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7208241F-C692-4B52-85EB-3D1802EB3835}
+	EndGlobalSection
+EndGlobal
