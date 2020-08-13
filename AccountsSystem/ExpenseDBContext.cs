@@ -8,7 +8,7 @@ using System.IO;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
-namespace ExpenseAccount
+namespace AccountsSystem
 {
     class ExpenseDBContext : DbContext
     {

@@ -9,7 +9,7 @@ using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data;
 
-namespace ExpenseAccount
+namespace AccountsSystem
 {
     class ExpenseDBProvider 
     {
@@ -74,8 +74,11 @@ namespace ExpenseAccount
 
         public static List<object> getProjectExpense()
         {
+            //s_DBProvider.dbContext.ProjectExpense.Include.Join(s_DBProvider.dbContext.Project, expense => expense.ProjectID, proj => proj.ID,
+            //    (expense, proj) =>
+            //    {
+            //    });
             return null;
-            //s_DBProvider.dbContext.Database..ProjectExpense.Join(s_DBProvider.dbContext.Project, a => a.ProjectID, b => b.ID, )
         }
 
         public static void Open()

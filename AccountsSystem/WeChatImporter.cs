@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace ExpenseAccount
+namespace AccountsSystem
 {
     class WeChatImporter : Importer
     {

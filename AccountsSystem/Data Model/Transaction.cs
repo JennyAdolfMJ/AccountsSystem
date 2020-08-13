@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data.Linq.Mapping;
 
-namespace ExpenseAccount
+namespace AccountsSystem
 {
     [Table(Name = "Transaction")]
     class Transaction

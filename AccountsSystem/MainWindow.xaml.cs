@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using Forms = System.Windows.Forms;
 
-namespace ExpenseAccount
+namespace AccountsSystem
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

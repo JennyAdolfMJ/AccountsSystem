@@ -3,7 +3,7 @@ using System.Data.SQLite;
 using System.IO;
 using System.Text;
 
-namespace ExpenseAccount
+namespace AccountsSystem
 {
     abstract class Importer
     {
