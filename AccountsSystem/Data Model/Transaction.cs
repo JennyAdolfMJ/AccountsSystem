@@ -23,7 +23,23 @@ namespace AccountsSystem
         [Column(Name = "Source", CanBeNull = false, DbType = "TEXT")]
         public string Source { get; set; }
 
-        [Column(Name = "Business", CanBeNull = false, DbType = "INTEGER")]
-        public bool Business { get; set; }
+        [Column(Name = "ProjectExpenseID", DbType = "INTEGER")]
+        public int? ProjectExpenseID { get; set; }
+
+        public void UpdateBusiness(int? value)
+        {
+            if (value.HasValue)
+            {
+                ExpenseDBProvider.Remove<ProjectExpense>(ID);
+                ProjectExpenseID = null;
+            }
+            else
+            {
+                ProjectExpense projectExpense = new ProjectExpense();
+                ExpenseDBProvider.Add(projectExpense);
+                ExpenseDBProvider.Save();
+                ProjectExpenseID = projectExpense.ID;
+            }
+        }
     }
 }

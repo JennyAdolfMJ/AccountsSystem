@@ -11,13 +11,10 @@ namespace AccountsSystem
         [Key]
         public int ID { get; set; }
 
-        [Column(Name = "TransactionID", CanBeNull = false, DbType = "INTEGER")]
-        public int TransactionID { get; set; }
-
-        [Column(Name = "ProjectID", CanBeNull = false, DbType = "INTEGER")]
-        public int ProjectID { get; set; }
+        [Column(Name = "ProjectID", DbType = "INTEGER")]
+        public int? ProjectID { get; set; }
 
         [Column(Name = "Usage", DbType = "TEXT")]
-        public int Usage { get; set; }
+        public string Usage { get; set; }
     }
 }

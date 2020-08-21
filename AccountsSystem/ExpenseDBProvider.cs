@@ -34,6 +34,17 @@ namespace AccountsSystem
             s_DBProvider.dbContext.Transaction.Add(transaction);
         }
 
+        public static void Add(ProjectExpense projectExpense)
+        {
+            s_DBProvider.dbContext.ProjectExpense.Add(projectExpense);
+        }
+
+        public static void Remove<ProjectExpense>(int id)
+        {
+            var projectExpense = s_DBProvider.dbContext.ProjectExpense.Find(id);
+            s_DBProvider.dbContext.ProjectExpense.Remove(projectExpense);
+        }
+
         public static void Save()
         {
             s_DBProvider.dbContext.SaveChanges();
@@ -41,18 +52,12 @@ namespace AccountsSystem
 
         public static List<Transaction> getTransactions(bool businessOnly = false)
         {
+            IQueryable<Transaction> result = s_DBProvider.dbContext.Transaction;
+
             if (businessOnly)
-                return s_DBProvider.dbContext.Transaction.Where(t => t.Business == true).ToList();
-            else
-                return s_DBProvider.dbContext.Transaction.ToList();
-        }
+                result = result.Where(t => t.ProjectExpenseID.HasValue);
 
-        public static List<Transaction> getTransactions(string projectName)
-        {
-            Project project = s_DBProvider.dbContext.Project.Where(t => t.ProjectName.Equals(projectName)).Single();
-            var transactionIDs =  s_DBProvider.dbContext.ProjectExpense.Where(t => t.ProjectID == project.ID).Select(t => t.TransactionID);
-
-            return s_DBProvider.dbContext.Transaction.Where(t => transactionIDs.Contains(t.ID)).ToList();
+            return result.ToList();
         }
 
         public static List<Project> getProjects()
@@ -60,25 +65,41 @@ namespace AccountsSystem
             return s_DBProvider.dbContext.Project.ToList();
         }
 
-        public static List<string> getProjectNames()
+        public static List<ProjectExpenseModel> getBusinessTrans(int? projectID = null)
         {
-            var projects = getProjects();
-            List<string> projectnames = new List<string>();
-            foreach(Project project in projects)
-            {
-                projectnames.Add(project.ProjectName);
-            }
+            IQueryable<ProjectExpense> projectExpense = s_DBProvider.dbContext.ProjectExpense;
+            if (projectID.HasValue)
+                projectExpense = projectExpense.Where(t => t.ProjectID == projectID);
 
-            return projectnames;
+            IQueryable<ProjectExpenseModel> result = projectExpense.Join(s_DBProvider.dbContext.Transaction, expense => expense.ID, trans => trans.ProjectExpenseID,
+                (expense, trans) => new ProjectExpenseModel
+                {
+                    ID = expense.ID,
+                    ProjectID = expense.ProjectID,
+                    Usage = expense.Usage,
+                    TimeStamp = trans.TimeStamp,
+                    Product = trans.Product,
+                    Price = trans.Price,
+                });
+
+            result.GroupJoin(s_DBProvider.dbContext.Project, expense => expense.ProjectID, proj => proj.ID,
+                (expense, proj) => new ProjectExpenseModel
+                {
+                    ID = expense.ID,
+                    ProjectID = expense.ProjectID,
+                    Usage = expense.Usage,
+                    TimeStamp = expense.TimeStamp,
+                    Product = expense.Product,
+                    Price = expense.Price,
+                    ProjectName = proj.FirstOrDefault(t => t.ID == expense.ProjectID).ProjectName
+                });
+
+            return result.ToList<ProjectExpenseModel>();
         }
 
-        public static List<object> getProjectExpense()
+        public static ProjectExpense GetProjectExpense(int id)
         {
-            //s_DBProvider.dbContext.ProjectExpense.Include.Join(s_DBProvider.dbContext.Project, expense => expense.ProjectID, proj => proj.ID,
-            //    (expense, proj) =>
-            //    {
-            //    });
-            return null;
+            return s_DBProvider.dbContext.ProjectExpense.Find(id);
         }
 
         public static void Open()

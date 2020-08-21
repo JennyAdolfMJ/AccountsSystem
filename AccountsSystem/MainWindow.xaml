@@ -14,19 +14,20 @@
                         <ColumnDefinition Width="29*"/>
                         <ColumnDefinition Width="257*"/>
                     </Grid.ColumnDefinitions>
-                    <DataGrid CellEditEnding="DataGrid_CellEditEnding" x:Name="TransTable" AutoGenerateColumns="False" Margin="39,69,0,0" HorizontalAlignment="Left" Width="700" Height="299" VerticalAlignment="Top" Grid.ColumnSpan="2">
+                    <DataGrid CanUserAddRows="False" CellEditEnding="TransTable_CellEditEnding" x:Name="TransTable" AutoGenerateColumns="False" Margin="39,69,0,0" HorizontalAlignment="Left" Width="700" Height="299" VerticalAlignment="Top" Grid.ColumnSpan="2">
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
+                                <Setter Property="Background" Value="LightBlue"></Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Business}" Value="true">
-                                        <Setter Property="Background" Value="Red"></Setter>
+                                    <DataTrigger Binding="{Binding ProjectExpenseID}" Value="{x:Null}">
+                                        <Setter Property="Background" Value="White"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding Business}" Header="公账"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
+                            <DataGridCheckBoxColumn Binding="{Binding ProjectExpenseID}" Header="公账"/>
+                            <DataGridTextColumn Width="*" IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding Price}" Header="金额"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding TimeStamp}" Header="时间"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding Source}" Header="来源"/>
@@ -41,14 +42,15 @@
             </TabItem>
             <TabItem Header="项目视图">
                 <Grid Background="#FFE5E5E5">
-                    <ComboBox x:Name="ProjListCombo" HorizontalAlignment="Left" Margin="74,21,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ProjExpenseTable_SelectionChanged"/>
+                    <ComboBox x:Name="ProjListCombo" DisplayMemberPath="ProjectName" SelectedValuePath="ID" HorizontalAlignment="Left" Margin="74,21,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ProjExpenseTable_SelectionChanged"/>
                     <Button x:Name="button1" Content="Button" HorizontalAlignment="Left" Margin="680,45,0,0" VerticalAlignment="Top" Width="75" Click="Button1_Click"/>
-                    <DataGrid x:Name="ProjExpenseTable" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="170" Margin="33,68,0,0" VerticalAlignment="Top" Width="485">
+                    <DataGrid CanUserAddRows="False" CellEditEnding="ProjExpenseTable_CellEditEnding" x:Name="ProjExpenseTable" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="250" Margin="33,68,0,0" VerticalAlignment="Top" Width="588">
                         <DataGrid.Columns>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding Price}" Header="金额"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding TimeStamp}" Header="时间"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding Source}" Header="来源"/>
+                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding ProjectName}" Header="项目"/>
+                            <DataGridTextColumn MinWidth="100" Width="*" Binding="{Binding Usage}" Header="用途"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>
