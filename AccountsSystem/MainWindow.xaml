@@ -7,14 +7,14 @@
         mc:Ignorable="d"
         Title="报销管理" Height="499" Width="872">
     <Grid>
-        <TabControl x:Name="tabControl">
-            <TabItem Header="交易记录">
+        <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
+            <TabItem Header="交易记录" TabIndex="0">
                 <Grid Background="#FFE5E5E5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="29*"/>
                         <ColumnDefinition Width="257*"/>
                     </Grid.ColumnDefinitions>
-                    <DataGrid CanUserAddRows="False" CellEditEnding="TransTable_CellEditEnding" x:Name="TransTable" AutoGenerateColumns="False" Margin="39,69,0,0" HorizontalAlignment="Left" Width="700" Height="299" VerticalAlignment="Top" Grid.ColumnSpan="2">
+                    <DataGrid SelectionUnit="Cell" CanUserAddRows="False" SelectionMode="Single" SelectedCellsChanged="TransTable_SelectedCellsChanged" x:Name="TransTable" AutoGenerateColumns="False" Margin="39,69,0,0" HorizontalAlignment="Left" Width="700" Height="299" VerticalAlignment="Top" Grid.ColumnSpan="2">
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
                                 <Setter Property="Background" Value="LightBlue"></Setter>
@@ -26,33 +26,44 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding ProjectExpenseID}" Header="公账"/>
+                            <DataGridCheckBoxColumn Binding="{Binding ProjectExpenseID, Mode=OneWay}" Header="公账"/>
                             <DataGridTextColumn Width="*" IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding Price}" Header="金额"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding TimeStamp}" Header="时间"/>
                             <DataGridTextColumn IsReadOnly="True" Binding="{Binding Source}" Header="来源"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button x:Name="button" Content="导入" Margin="664.046,392,0,0" Click="Button_Click" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="75" Grid.Column="1"/>
+                    <Button x:Name="ImportBtn" Content="导入" Margin="664.046,392,0,0" Click="ImportBtn_Click" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" Width="75" Grid.Column="1"/>
                     <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="532.046,391,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0" Grid.Column="1">
                         <ComboBoxItem Content="微信"/>
                         <ComboBoxItem Content="支付宝"/>
                     </ComboBox>
+                    <Button x:Name="ResetBtn" Click="ResetBtn_Click" Content="重置" Grid.Column="1" HorizontalAlignment="Left" Margin="656,26,0,0" VerticalAlignment="Top" Width="75"/>
                 </Grid>
             </TabItem>
-            <TabItem Header="项目视图">
+            <TabItem Header="项目视图" TabIndex="1">
                 <Grid Background="#FFE5E5E5">
-                    <ComboBox x:Name="ProjListCombo" DisplayMemberPath="ProjectName" SelectedValuePath="ID" HorizontalAlignment="Left" Margin="74,21,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ProjExpenseTable_SelectionChanged"/>
-                    <Button x:Name="button1" Content="Button" HorizontalAlignment="Left" Margin="680,45,0,0" VerticalAlignment="Top" Width="75" Click="Button1_Click"/>
-                    <DataGrid CanUserAddRows="False" CellEditEnding="ProjExpenseTable_CellEditEnding" x:Name="ProjExpenseTable" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="250" Margin="33,68,0,0" VerticalAlignment="Top" Width="588">
+                    <DataGrid CanUserAddRows="False" x:Name="ProjExpenseTable" AutoGenerateColumns="False" HorizontalAlignment="Left" Height="294" VerticalAlignment="Bottom" Width="530"
+                              CellEditEnding="ProjExpenseTable_CellEditEnding" SelectionChanged="ProjExpenseTable_SelectionChanged">
                         <DataGrid.Columns>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding Price}" Header="金额"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding TimeStamp}" Header="时间"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding ProjectName}" Header="项目"/>
+                            <DataGridTextColumn MinWidth="50" IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
+                            <DataGridTextColumn MinWidth="50" IsReadOnly="True" Binding="{Binding Price}" Header="金额"/>
+                            <DataGridTextColumn MinWidth="100" IsReadOnly="True" Binding="{Binding TimeStamp}" Header="时间"/>
+                            <DataGridTextColumn MinWidth="50" IsReadOnly="True" Binding="{Binding ProjectName}" Header="项目"/>
                             <DataGridTextColumn MinWidth="100" Width="*" Binding="{Binding Usage}" Header="用途"/>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <GroupBox x:Name="EditGroup" Header="编辑" HorizontalAlignment="Left" Height="221" Margin="571,168,0,0" VerticalAlignment="Top" Width="259" IsEnabled="False">
+                        <Grid>
+                            <Label Content="项目：" HorizontalAlignment="Left" Margin="23,22,0,0" VerticalAlignment="Top"/>
+                            <ComboBox x:Name="ProjCombo" DisplayMemberPath="ProjectName" SelectedValuePath="ID" HorizontalAlignment="Right" Margin="0,0,27,151" VerticalAlignment="Bottom" Width="120" RenderTransformOrigin="5.675,6.864"/>
+                            <Label Content="用途：" HorizontalAlignment="Left" Margin="23,77,0,0" VerticalAlignment="Top"/>
+                            <TextBox x:Name="UsageText" HorizontalAlignment="Left" Height="57" Margin="100,80,0,0" TextWrapping="Wrap" Text="拍摄" VerticalAlignment="Top" Width="120"/>
+                            <Button x:Name="SaveBtn" Content="保存" HorizontalAlignment="Left" Margin="145,160,0,0" VerticalAlignment="Top" Width="75" Click="SaveBtn_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <Button x:Name="ExportBtn" Content="导出" HorizontalAlignment="Left" Margin="719,48,0,0" VerticalAlignment="Top" Width="75" Click="ExportBtn_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

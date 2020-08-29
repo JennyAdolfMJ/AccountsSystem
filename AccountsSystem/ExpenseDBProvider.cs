@@ -82,24 +82,54 @@ namespace AccountsSystem
                     Price = trans.Price,
                 });
 
-            result.GroupJoin(s_DBProvider.dbContext.Project, expense => expense.ProjectID, proj => proj.ID,
-                (expense, proj) => new ProjectExpenseModel
-                {
-                    ID = expense.ID,
-                    ProjectID = expense.ProjectID,
-                    Usage = expense.Usage,
-                    TimeStamp = expense.TimeStamp,
-                    Product = expense.Product,
-                    Price = expense.Price,
-                    ProjectName = proj.FirstOrDefault(t => t.ID == expense.ProjectID).ProjectName
-                });
+            //result =  result.GroupJoin(s_DBProvider.dbContext.Project, expense => expense.ProjectID.Value, proj => proj.ID,
+            //     (expense, proj) => new ProjectExpenseModel
+            //     {
+            //         ID = expense.ID,
+            //         ProjectID = expense.ProjectID,
+            //         Usage = expense.Usage,
+            //         TimeStamp = expense.TimeStamp,
+            //         Product = expense.Product,
+            //         Price = expense.Price,
+            //         ProjectName = proj.FirstOrDefault(t => t.ID == expense.ProjectID.Value).ProjectName
+            //     });
 
-            return result.ToList<ProjectExpenseModel>();
+            List<ProjectExpenseModel> list = result.ToList();
+
+            Dictionary<int, string> projects = s_DBProvider.dbContext.Project.ToDictionary(a => a.ID, b => b.ProjectName);
+            foreach (ProjectExpenseModel item in list)
+            {
+                if (item.ProjectID.HasValue)
+                {
+                    item.ProjectName = projects[item.ProjectID.Value];
+                }
+            }
+
+            // var bbb=       result.GroupJoin(s_DBProvider.dbContext.Project, expense => expense.ProjectID.Value, proj => proj.ID,
+            //(expense, projs) => new { expense, projs }).SelectMany(items => items.projs.DefaultIfEmpty(),
+            //(items, proj) => new ProjectExpenseModel
+            //{
+            //    ID = items.expense.ID,
+            //    ProjectID = items.expense.ProjectID,
+            //    Usage = items.expense.Usage,
+            //    TimeStamp = items.expense.TimeStamp,
+            //    Product = items.expense.Product,
+            //    Price = items.expense.Price,
+            //    ProjectName = proj.ProjectName
+            //});
+
+            return list;
         }
 
         public static ProjectExpense GetProjectExpense(int id)
         {
             return s_DBProvider.dbContext.ProjectExpense.Find(id);
+        }
+
+        public static void Reset()
+        {
+            s_DBProvider.dbContext.Transaction.RemoveRange(s_DBProvider.dbContext.Transaction);
+            s_DBProvider.dbContext.ProjectExpense.RemoveRange(s_DBProvider.dbContext.ProjectExpense);
         }
 
         public static void Open()

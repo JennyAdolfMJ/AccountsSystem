@@ -26,9 +26,9 @@ namespace AccountsSystem
         [Column(Name = "ProjectExpenseID", DbType = "INTEGER")]
         public int? ProjectExpenseID { get; set; }
 
-        public void UpdateBusiness(int? value)
+        public void UpdateBusiness()
         {
-            if (value.HasValue)
+            if (ProjectExpenseID.HasValue)
             {
                 ExpenseDBProvider.Remove<ProjectExpense>(ID);
                 ProjectExpenseID = null;

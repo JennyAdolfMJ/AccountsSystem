@@ -16,12 +16,12 @@ namespace AccountsSystem
             var projectNames = ExpenseDBProvider.getProjects();
             projectNames.Insert(0, new Project(projectNames.Count, "未筛选"));
             projectNames.Add(new Project(projectNames.Count, "+新建项目"));
-            ProjListCombo.ItemsSource = projectNames;
-            ProjListCombo.SelectedIndex = 0;
+            ProjCombo.ItemsSource = projectNames;
+            ProjCombo.SelectedIndex = 0;
             UpdateTable();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ImportBtn_Click(object sender, RoutedEventArgs e)
         {
             Forms.OpenFileDialog dialog = new Forms.OpenFileDialog();
             dialog.Filter = "Text Files|*.csv";
@@ -35,7 +35,7 @@ namespace AccountsSystem
 
                 importer.Import();
                 UpdateTable();
-                MessageBox.Show("Success");
+                MessageBox.Show("导入成功");
             }
         }
 
@@ -43,31 +43,10 @@ namespace AccountsSystem
         {
             TransTable.ItemsSource = ExpenseDBProvider.getTransactions();
             ProjExpenseTable.ItemsSource = ExpenseDBProvider.getBusinessTrans();
+
         }
 
-        private void Button1_Click(object sender, RoutedEventArgs e)
-        {
-            NewItemDlg window1 = new NewItemDlg();
-
-            if(window1.ShowDialog().Value == true)
-            {
-                MessageBox.Show(window1.ProjectName);
-            }
-        }
-
-        private void ProjExpenseTable_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getBusinessTrans();
-        }
-
-        private void TransTable_CellEditEnding(object sender, System.Windows.Controls.DataGridCellEditEndingEventArgs e)
-        {
-            Transaction transaction = e.Row.Item as Transaction;
-            transaction.UpdateBusiness(transaction.ProjectExpenseID);
-            ExpenseDBProvider.Save();
-        }
-
-        private void ProjExpenseTable_CellEditEnding(object sender, System.Windows.Controls.DataGridCellEditEndingEventArgs e)
+        private void ProjExpenseTable_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
         {
             if(e.Column is DataGridComboBoxColumn)
             {
@@ -77,6 +56,70 @@ namespace AccountsSystem
                 projectExpense.ProjectID = combo.SelectedIndex;
                 ExpenseDBProvider.Save();
             }
+        }
+
+        private void ProjExpenseTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DataGrid dataGrid = sender as DataGrid;
+            EditGroup.IsEnabled = dataGrid.SelectedItems.Count > 0;
+        }
+
+        private void SaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(ProjectExpenseModel item in ProjExpenseTable.SelectedItems)
+            {
+                ProjectExpense projectExpense = ExpenseDBProvider.GetProjectExpense(item.ID);
+
+                Project project = ProjCombo.SelectedItem as Project;
+                projectExpense.ProjectID = project.ID;
+                projectExpense.Usage = UsageText.Text;
+            }
+
+            ExpenseDBProvider.Save();
+            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getBusinessTrans();
+        }
+
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.Source is TabControl)
+            {
+                TabControl tabControl = e.Source as TabControl;
+
+                if (tabControl.SelectedIndex == 1)
+                {
+                    ProjExpenseTable.ItemsSource = ExpenseDBProvider.getBusinessTrans();
+                }
+            }
+        }
+
+        private void TransTable_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            if (e.AddedCells.Count != 1)
+                return;
+
+            DataGridCellInfo cellInfo = e.AddedCells[0];
+            if (cellInfo.Column is DataGridCheckBoxColumn)
+            {
+                Transaction trans = cellInfo.Item as Transaction;
+                trans.UpdateBusiness();
+                ExpenseDBProvider.Save();
+                TransTable.ItemsSource = ExpenseDBProvider.getTransactions();
+            }
+        }
+
+        private void ExportBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Exporter exporter = new Exporter();
+            exporter.Export(ExpenseDBProvider.getBusinessTrans());
+
+            MessageBox.Show("导出成功");
+        }
+
+        private void ResetBtn_Click(object sender, RoutedEventArgs e)
+        {
+            ExpenseDBProvider.Reset();
+            ExpenseDBProvider.Save();
+            TransTable.ItemsSource = ExpenseDBProvider.getTransactions();
         }
     }
 }
