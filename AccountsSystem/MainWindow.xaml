@@ -8,9 +8,9 @@
         Title="报销管理" Height="500" Width="800" MinHeight="400" MinWidth="500" FontSize="14">
     <Grid>
         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="交易记录" TabIndex="0">
+            <TabItem x:Name="ExpensesTab" Header="交易记录" TabIndex="0">
                 <Grid Background="#FFE5E5E5">
-                    <DataGrid SelectionUnit="Cell" CanUserAddRows="False" SelectionMode="Single" SelectedCellsChanged="TransTable_SelectedCellsChanged" x:Name="TransTable" AutoGenerateColumns="False" Margin="0,0,0,70">
+                    <DataGrid SelectionUnit="FullRow" CanUserAddRows="False" SelectionMode="Single" x:Name="ExpensesTable" AutoGenerateColumns="False" Margin="0,0,0,70">
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
                                 <Setter Property="Background" Value="LightBlue"></Setter>
@@ -22,7 +22,7 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn MinWidth="40" Binding="{Binding ProjectExpenseID, Mode=OneWay}" Header="公账"/>
+                            <DataGridCheckBoxColumn MinWidth="40" Binding="{Binding IsBusiness}" Header="公账"/>
                             <DataGridTextColumn  Width="*" IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
                             <DataGridTextColumn MinWidth="50" IsReadOnly="True" Binding="{Binding Price}" Header="金额">
                             </DataGridTextColumn>

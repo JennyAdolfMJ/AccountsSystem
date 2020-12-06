@@ -9,18 +9,13 @@ namespace AccountsSystem
     /// </summary>
     public partial class MainWindow : Window
     {
+        private ExpensesTabHandler expensesTabHandler;
+
         public MainWindow()
         {
             InitializeComponent();
-            ExpenseDBProvider.Open();
-            ProjCombo.ItemsSource = ExpenseDBProvider.getProjects();
-            ProjCombo.SelectedIndex = 0;
-            UpdateTable();
-        }
-
-        public void InitComponents()
-        {
-
+            expensesTabHandler = new ExpensesTabHandler();
+            ExpensesTable.ItemsSource = expensesTabHandler.Expenses;
         }
 
         private void ImportBtn_Click(object sender, RoutedEventArgs e)
@@ -36,16 +31,9 @@ namespace AccountsSystem
                     importer = new AlipayImporter(dialog.FileName);
 
                 importer.Import();
-                UpdateTable();
+                expensesTabHandler.Refresh();
                 MessageBox.Show("导入成功");
             }
-        }
-
-        private void UpdateTable()
-        {
-            TransTable.ItemsSource = ExpenseDBProvider.getExpenses();
-            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getProjExpenses();
-
         }
 
         private void ProjExpenseTable_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -54,9 +42,9 @@ namespace AccountsSystem
             {
                 dynamic item = e.Row.Item;
                 ComboBox combo = e.EditingElement as ComboBox;
-                ProjectExpense projectExpense = ExpenseDBProvider.GetProjectExpense(item.ID);
+                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjectExpense(item.ID);
                 projectExpense.ProjectID = combo.SelectedIndex;
-                ExpenseDBProvider.Save();
+                ExpenseDBProvider.Instance().Save();
             }
         }
 
@@ -70,58 +58,63 @@ namespace AccountsSystem
         {
             foreach(ProjectExpenseView item in ProjExpenseTable.SelectedItems)
             {
-                ProjectExpense projectExpense = ExpenseDBProvider.GetProjectExpense(item.ID);
+                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjectExpense(item.ID);
 
                 Project project = ProjCombo.SelectedItem as Project;
                 projectExpense.ProjectID = project.ID;
                 projectExpense.Usage = UsageText.Text;
             }
 
-            ExpenseDBProvider.Save();
-            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getProjExpenses();
+            ExpenseDBProvider.Instance().Save();
+            ProjExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getProjExpenses();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (e.Source is TabControl)
+            foreach(var item in e.AddedItems)
             {
-                TabControl tabControl = e.Source as TabControl;
-
-                if (tabControl.SelectedIndex == 1)
+                if(item is TabItem)
                 {
-                    ProjExpenseTable.ItemsSource = ExpenseDBProvider.getProjExpenses();
+                    TabItem tab = item as TabItem;
+
+                    switch (tab.TabIndex)
+                    {
+                        case 0:
+                            expensesTabHandler.TabSelected(); break;
+
+                    }
                 }
             }
-        }
 
-        private void TransTable_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
-            if (e.AddedCells.Count != 1)
-                return;
-
-            DataGridCellInfo cellInfo = e.AddedCells[0];
-            if (cellInfo.Column is DataGridCheckBoxColumn)
+            foreach (var item in e.RemovedItems)
             {
-                Expense trans = cellInfo.Item as Expense;
-                //trans.UpdateBusiness();
-                ExpenseDBProvider.Save();
-                TransTable.ItemsSource = ExpenseDBProvider.getExpenses();
+                if (item is TabItem)
+                {
+                    TabItem tab = item as TabItem;
+
+                    switch (tab.TabIndex)
+                    {
+                        case 0:
+                            expensesTabHandler.TabUnSelected(); break;
+
+                    }
+                }
             }
         }
 
         private void ExportBtn_Click(object sender, RoutedEventArgs e)
         {
             Exporter exporter = new Exporter();
-            exporter.Export(ExpenseDBProvider.getProjExpenses());
+            exporter.Export(ExpenseDBProvider.Instance().getProjExpenses());
 
             MessageBox.Show("导出成功");
         }
 
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
-            ExpenseDBProvider.Reset();
-            ExpenseDBProvider.Save();
-            TransTable.ItemsSource = ExpenseDBProvider.getExpenses();
+            ExpenseDBProvider.Instance().Reset();
+            ExpenseDBProvider.Instance().Save();
+            ExpensesTable.ItemsSource = ExpenseDBProvider.Instance().getExpenses();
         }
     }
 }

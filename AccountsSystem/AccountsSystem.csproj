@@ -82,14 +82,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Data View\ExpenseView.cs" />
-    <Compile Include="Data View\ProjectExpenseView.cs" />
-    <Compile Include="Data Model\ProjectExpense.cs" />
+    <Compile Include="DataViews\ExpenseView.cs" />
+    <Compile Include="DataViews\ProjectExpenseView.cs" />
+    <Compile Include="DataModels\ProjectExpense.cs" />
     <Compile Include="ExpenseDBContext.cs" />
     <Compile Include="Exporter.cs" />
+    <Compile Include="Handlers\ExpensesTabHandler.cs" />
     <Compile Include="Importer.cs" />
-    <Compile Include="Data Model\Project.cs" />
-    <Compile Include="Data Model\Expense.cs" />
+    <Compile Include="DataModels\Project.cs" />
+    <Compile Include="DataModels\Expense.cs" />
     <Compile Include="AlipayImporter.cs" />
     <Compile Include="WeChatImporter.cs" />
     <Compile Include="NewItemDlg.xaml.cs">

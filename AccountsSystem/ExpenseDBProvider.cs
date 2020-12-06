@@ -21,7 +21,12 @@ namespace AccountsSystem
             dbContext = new ExpenseDBContext();
         }
 
-        private static ExpenseDBProvider instance()
+        ~ExpenseDBProvider()
+        {
+            s_DBProvider.dbContext.Dispose();
+        }
+
+        public static ExpenseDBProvider Instance()
         {
             if (s_DBProvider == null)
                 s_DBProvider = new ExpenseDBProvider();
@@ -29,35 +34,35 @@ namespace AccountsSystem
             return s_DBProvider;
         }
 
-        public static void Add(Expense transaction)
+        public void Add(Expense transaction)
         {
-            s_DBProvider.dbContext.Expenses.Add(transaction);
+            dbContext.Expenses.Add(transaction);
         }
 
-        public static void Add(ProjectExpense projectExpense)
+        public void Add(ProjectExpense projectExpense)
         {
-            s_DBProvider.dbContext.ProjectExpense.Add(projectExpense);
+            dbContext.ProjectExpense.Add(projectExpense);
         }
 
-        public static void Remove<ProjectExpense>(int id)
+        public void Remove<ProjectExpense>(int id)
         {
-            var projectExpense = s_DBProvider.dbContext.ProjectExpense.Find(id);
-            s_DBProvider.dbContext.ProjectExpense.Remove(projectExpense);
+            var projectExpense = dbContext.ProjectExpense.Find(id);
+            dbContext.ProjectExpense.Remove(projectExpense);
         }
 
-        public static void Save()
+        public void Save()
         {
-            s_DBProvider.dbContext.SaveChanges();
+            dbContext.SaveChanges();
         }
 
-        public static List<ExpenseView> getExpenses(bool businessOnly = false)
+        public List<ExpenseView> getExpenses(bool businessOnly = false)
         {
-            IQueryable<Expense> expenses = s_DBProvider.dbContext.Expenses;
+            IQueryable<Expense> expenses = dbContext.Expenses;
 
             List<ExpenseView> expenseViews = new List<ExpenseView>();
             foreach (Expense expense in expenses.ToList())
             {
-                bool isBusiness = s_DBProvider.dbContext.ProjectExpense.Select(t => t.ExpenseID == expense.ID).Count() > 0;
+                bool isBusiness = dbContext.ProjectExpense.Select(t => t.ExpenseID == expense.ID).Count() > 0;
 
                 if (businessOnly && !isBusiness)
                     continue;
@@ -68,24 +73,24 @@ namespace AccountsSystem
             return expenseViews;
         }
 
-        public static List<Project> getProjects()
+        public List<Project> getProjects()
         {
-            return s_DBProvider.dbContext.Projects.ToList();
+            return dbContext.Projects.ToList();
         }
 
-        public static List<ProjectExpenseView> getProjExpenses(int? projectID = null)
+        public List<ProjectExpenseView> getProjExpenses(int? projectID = null)
         {
-            IQueryable<ProjectExpense> projectExpenses = s_DBProvider.dbContext.ProjectExpense;
+            IQueryable<ProjectExpense> projectExpenses = dbContext.ProjectExpense;
 
             List<ProjectExpenseView> result = new List<ProjectExpenseView>();
             foreach (ProjectExpense projectExpense in projectExpenses)
             {
-                Expense expense = s_DBProvider.dbContext.Expenses.Single(t => t.ID == projectExpense.ExpenseID);
+                Expense expense = dbContext.Expenses.Single(t => t.ID == projectExpense.ExpenseID);
 
                 Project project = null;
                 try
                 {
-                    project = s_DBProvider.dbContext.Projects.Single(t => t.ID == projectExpense.ProjectID);
+                    project = dbContext.Projects.Single(t => t.ID == projectExpense.ProjectID);
                 }
                 catch { }
 
@@ -95,25 +100,15 @@ namespace AccountsSystem
             return result;
         }
 
-        public static ProjectExpense GetProjectExpense(int id)
+        public ProjectExpense GetProjectExpense(int id)
         {
-            return s_DBProvider.dbContext.ProjectExpense.Find(id);
+            return dbContext.ProjectExpense.Find(id);
         }
 
-        public static void Reset()
+        public void Reset()
         {
-            s_DBProvider.dbContext.Expenses.RemoveRange(s_DBProvider.dbContext.Expenses);
-            s_DBProvider.dbContext.ProjectExpense.RemoveRange(s_DBProvider.dbContext.ProjectExpense);
-        }
-
-        public static void Open()
-        {
-            instance();
-        }
-
-        public static void Close()
-        {
-            s_DBProvider.dbContext.Dispose();
+            dbContext.Expenses.RemoveRange(dbContext.Expenses);
+            dbContext.ProjectExpense.RemoveRange(dbContext.ProjectExpense);
         }
     }
 }

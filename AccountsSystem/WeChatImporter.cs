@@ -51,10 +51,10 @@ namespace AccountsSystem
                 transaction.Price = float.Parse(fields[(int)CSVFormat.Price].Replace("¥", ""));
                 transaction.Source = source;
 
-                ExpenseDBProvider.Add(transaction);
+                ExpenseDBProvider.Instance().Add(transaction);
                 line = streamReader.ReadLine();
             }
-            ExpenseDBProvider.Save();
+            ExpenseDBProvider.Instance().Save();
         }
     }
 }

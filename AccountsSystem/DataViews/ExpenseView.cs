@@ -4,7 +4,7 @@ using System.Data.Linq.Mapping;
 
 namespace AccountsSystem
 {
-    class ExpenseView
+    internal class ExpenseView
     {
         public ExpenseView(Expense expense, bool isBusiness)
         {
