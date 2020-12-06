@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Forms = System.Windows.Forms;
 
 namespace AccountsSystem
@@ -10,12 +11,15 @@ namespace AccountsSystem
     public partial class MainWindow : Window
     {
         private ExpensesTabHandler expensesTabHandler;
+        private ProjectTabHandler projectTabHandler;
+        private ProjExpensesTabHandler projExpensesTabHandler;
 
         public MainWindow()
         {
             InitializeComponent();
-            expensesTabHandler = new ExpensesTabHandler();
-            ExpensesTable.ItemsSource = expensesTabHandler.Expenses;
+            expensesTabHandler = new ExpensesTabHandler(ExpenseTable);
+            projExpensesTabHandler = new ProjExpensesTabHandler(ProjExpenseTable);
+            projectTabHandler = new ProjectTabHandler(ProjectsTable);
         }
 
         private void ImportBtn_Click(object sender, RoutedEventArgs e)
@@ -42,7 +46,7 @@ namespace AccountsSystem
             {
                 dynamic item = e.Row.Item;
                 ComboBox combo = e.EditingElement as ComboBox;
-                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjectExpense(item.ID);
+                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpense(item.ID);
                 projectExpense.ProjectID = combo.SelectedIndex;
                 ExpenseDBProvider.Instance().Save();
             }
@@ -58,15 +62,12 @@ namespace AccountsSystem
         {
             foreach(ProjectExpenseView item in ProjExpenseTable.SelectedItems)
             {
-                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjectExpense(item.ID);
+                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpense(item.ID);
 
                 Project project = ProjCombo.SelectedItem as Project;
                 projectExpense.ProjectID = project.ID;
                 projectExpense.Usage = UsageText.Text;
             }
-
-            ExpenseDBProvider.Instance().Save();
-            ProjExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getProjExpenses();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -81,7 +82,8 @@ namespace AccountsSystem
                     {
                         case 0:
                             expensesTabHandler.TabSelected(); break;
-
+                        case 2:
+                            projExpensesTabHandler.TabSelected(); break;
                     }
                 }
             }
@@ -94,8 +96,8 @@ namespace AccountsSystem
 
                     switch (tab.TabIndex)
                     {
-                        case 0:
-                            expensesTabHandler.TabUnSelected(); break;
+                        case 2:
+                            projExpensesTabHandler.TabUnSelected(); break;
 
                     }
                 }
@@ -113,8 +115,30 @@ namespace AccountsSystem
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
             ExpenseDBProvider.Instance().Reset();
-            ExpenseDBProvider.Instance().Save();
-            ExpensesTable.ItemsSource = ExpenseDBProvider.Instance().getExpenses();
+            ExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getExpenses();
+        }
+
+        private void SaveExpenseBtn_Click(object sender, RoutedEventArgs e)
+        {
+            expensesTabHandler.Save();
+        }
+
+        private void ExpensesTable_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
+        {
+            ExpenseView expenseView = e.Row.Item as ExpenseView;
+            expenseView.Dirty = true;
+        }
+
+        private void ProjSaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            projectTabHandler.Save(ProjNameTxt.Text, ProjDescTxt.Text);
+            projectTabHandler.Refresh();
+        }
+
+        private void ProjDelBtn_Click(object sender, RoutedEventArgs e)
+        {
+            projectTabHandler.Delete();
+            projectTabHandler.Refresh();
         }
     }
 }

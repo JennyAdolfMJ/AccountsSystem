@@ -88,6 +88,8 @@
     <Compile Include="ExpenseDBContext.cs" />
     <Compile Include="Exporter.cs" />
     <Compile Include="Handlers\ExpensesTabHandler.cs" />
+    <Compile Include="Handlers\ProjExpensesTabHandler.cs" />
+    <Compile Include="Handlers\ProjectTabHandler.cs" />
     <Compile Include="Importer.cs" />
     <Compile Include="DataModels\Project.cs" />
     <Compile Include="DataModels\Expense.cs" />

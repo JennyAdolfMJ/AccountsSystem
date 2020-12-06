@@ -34,9 +34,14 @@ namespace AccountsSystem
             return s_DBProvider;
         }
 
-        public void Add(Expense transaction)
+        public void Add(Expense expense)
         {
-            dbContext.Expenses.Add(transaction);
+            dbContext.Expenses.Add(expense);
+        }
+
+        public void Add(Project project)
+        {
+            dbContext.Projects.Add(project);
         }
 
         public void Add(ProjectExpense projectExpense)
@@ -44,9 +49,13 @@ namespace AccountsSystem
             dbContext.ProjectExpense.Add(projectExpense);
         }
 
-        public void Remove<ProjectExpense>(int id)
+        public void RemoveRange(List<Project> projects)
         {
-            var projectExpense = dbContext.ProjectExpense.Find(id);
+            dbContext.Projects.RemoveRange(projects);
+        }
+
+        public void Remove(ProjectExpense projectExpense)
+        {
             dbContext.ProjectExpense.Remove(projectExpense);
         }
 
@@ -62,7 +71,7 @@ namespace AccountsSystem
             List<ExpenseView> expenseViews = new List<ExpenseView>();
             foreach (Expense expense in expenses.ToList())
             {
-                bool isBusiness = dbContext.ProjectExpense.Select(t => t.ExpenseID == expense.ID).Count() > 0;
+                bool isBusiness = dbContext.ProjectExpense.Where(t => t.ExpenseID == expense.ID).Count() > 0;
 
                 if (businessOnly && !isBusiness)
                     continue;
@@ -100,15 +109,20 @@ namespace AccountsSystem
             return result;
         }
 
-        public ProjectExpense GetProjectExpense(int id)
+        public ProjectExpense GetProjExpense(int expenseId)
         {
-            return dbContext.ProjectExpense.Find(id);
+            try
+            {
+                return dbContext.ProjectExpense.Single(t => t.ExpenseID == expenseId);
+            }
+            catch { return null; }
         }
 
         public void Reset()
         {
             dbContext.Expenses.RemoveRange(dbContext.Expenses);
             dbContext.ProjectExpense.RemoveRange(dbContext.ProjectExpense);
+            Save();
         }
     }
 }

@@ -13,18 +13,28 @@ namespace AccountsSystem
             Product = expense.Product;
             Source = expense.Source;
             IsBusiness = isBusiness;
+            Dirty = false;
         }
 
-        public int ID { get; set; }
+        public int ID { get; private set; }
 
-        public DateTime TimeStamp { get; set; }
+        public DateTime TimeStamp { get; private set; }
 
-        public string Product { get; set; }
+        public string Product { get; private set; }
 
-        public float Price { get; set; }
+        public float Price { get; private set; }
 
-        public string Source { get; set; }
+        public string Source { get; private set; }
 
         public bool IsBusiness { get; set; }
+
+        public bool Dirty { get; set; }
+
+        public ProjectExpense ToProjectExpense()
+        {
+            ProjectExpense projectExpense = new ProjectExpense();
+            projectExpense.ExpenseID = ID;
+            return projectExpense;
+        }
     }
 }
