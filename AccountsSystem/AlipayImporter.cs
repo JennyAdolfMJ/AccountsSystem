@@ -39,7 +39,7 @@ namespace AccountsSystem
             while (line != null && !line.StartsWith("#"))
             {
                 string[] fields = line.Split(',');
-                Transaction transaction = new Transaction();
+                Expense transaction = new Expense();
 
                 transaction.TimeStamp = DateTime.Parse(fields[(int)CSVFormat.Time]);
                 transaction.Product = fields[(int)CSVFormat.Product];

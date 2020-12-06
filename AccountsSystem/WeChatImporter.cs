@@ -38,7 +38,7 @@ namespace AccountsSystem
             while (line != null)
             {
                 string[] fields = line.Split(',');
-                Transaction transaction = new Transaction();
+                Expense transaction = new Expense();
 
                 if (fields[(int)CSVFormat.InOut].Equals("收入"))
                 {

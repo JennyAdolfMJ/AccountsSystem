@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AccountsSystem"
         mc:Ignorable="d"
-        Title="报销管理" Height="500" Width="800" MinHeight="400" MinWidth="500">
+        Title="报销管理" Height="500" Width="800" MinHeight="400" MinWidth="500" FontSize="14">
     <Grid>
         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="交易记录" TabIndex="0">
@@ -22,11 +22,12 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Binding="{Binding ProjectExpenseID, Mode=OneWay}" Header="公账"/>
-                            <DataGridTextColumn Width="*" IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding Price}" Header="金额"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding TimeStamp}" Header="时间"/>
-                            <DataGridTextColumn IsReadOnly="True" Binding="{Binding Source}" Header="来源"/>
+                            <DataGridCheckBoxColumn MinWidth="40" Binding="{Binding ProjectExpenseID, Mode=OneWay}" Header="公账"/>
+                            <DataGridTextColumn  Width="*" IsReadOnly="True" Binding="{Binding Product}" Header="产品"/>
+                            <DataGridTextColumn MinWidth="50" IsReadOnly="True" Binding="{Binding Price}" Header="金额">
+                            </DataGridTextColumn>
+                            <DataGridTextColumn MinWidth="100" IsReadOnly="True" Binding="{Binding TimeStamp}" Header="时间"/>
+                            <DataGridTextColumn MinWidth="40" IsReadOnly="True" Binding="{Binding Source}" Header="来源"/>
                         </DataGrid.Columns>
                     </DataGrid>
                     <ComboBox x:Name="comboBox" Margin="0,0,230,20" SelectedIndex="0" HorizontalAlignment="Right" Width="120" Height="22" VerticalAlignment="Bottom">
@@ -38,6 +39,26 @@
                 </Grid>
             </TabItem>
             <TabItem Header="项目视图" TabIndex="1">
+                <Grid Background="#FFE5E5E5">
+                    <GroupBox x:Name="groupBox" Header="新建项目" HorizontalAlignment="Left" Height="124" Margin="10,10,0,0" VerticalAlignment="Top" Width="624">
+                        <Grid>
+                            <Label Content="项目名称" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+                            <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="94,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                            <Label Content="项目简介" HorizontalAlignment="Left" Margin="237,19,0,0" VerticalAlignment="Top" RenderTransformOrigin="-3,1.069"/>
+                            <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="67" Margin="350,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+                            <Button x:Name="button" Content="保存" HorizontalAlignment="Left" Margin="475,37,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="4.6,-7.6"/>
+                        </Grid>
+                    </GroupBox>
+                    <DataGrid  CanUserAddRows="False"  Margin="0,151,0,0">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn MinWidth="150" IsReadOnly="True" Binding="{Binding ProjectName}" Header="项目名称"/>
+                            <DataGridTextColumn MinWidth="100" Width="*" Binding="{Binding ProjectDescription}" Header="项目简介"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button x:Name="button1" Content="删除项目" HorizontalAlignment="Left" Margin="701,83,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.093,-0.13"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="项目账单视图" TabIndex="2">
                 <Grid Background="#FFE5E5E5">
                     <DataGrid CanUserAddRows="False" x:Name="ProjExpenseTable" AutoGenerateColumns="False"
                               CellEditEnding="ProjExpenseTable_CellEditEnding" SelectionChanged="ProjExpenseTable_SelectionChanged" Margin="0,100,0,0">

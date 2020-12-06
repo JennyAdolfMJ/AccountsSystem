@@ -7,7 +7,7 @@ namespace AccountsSystem
 {
     class Exporter
     {
-        public void Export(List<ProjectExpenseModel> data)
+        public void Export(List<ProjectExpenseView> data)
         {
             Application excel = new Application();
             excel.Visible = false;
@@ -22,7 +22,7 @@ namespace AccountsSystem
             int rowIndex = 2;     
             int colIndex = 1;  
 
-            foreach(ProjectExpenseModel projectExpense in data)
+            foreach(ProjectExpenseView projectExpense in data)
             {
                 worksheet.Cells[rowIndex, colIndex++] = rowIndex - 1;
                 worksheet.Cells[rowIndex, colIndex++] = projectExpense.ProjectName;

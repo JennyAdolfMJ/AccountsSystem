@@ -4,8 +4,8 @@ using System.Data.Linq.Mapping;
 
 namespace AccountsSystem
 {
-    [Table(Name = "Transaction")]
-    class Transaction
+    [Table(Name = "Expense")]
+    class Expense
     {
         [Column(Name = "ID", IsDbGenerated = true, IsPrimaryKey = true, DbType = "INTEGER")]
         [Key]
@@ -22,24 +22,5 @@ namespace AccountsSystem
 
         [Column(Name = "Source", CanBeNull = false, DbType = "TEXT")]
         public string Source { get; set; }
-
-        [Column(Name = "ProjectExpenseID", DbType = "INTEGER")]
-        public int? ProjectExpenseID { get; set; }
-
-        public void UpdateBusiness()
-        {
-            if (ProjectExpenseID.HasValue)
-            {
-                ExpenseDBProvider.Remove<ProjectExpense>(ID);
-                ProjectExpenseID = null;
-            }
-            else
-            {
-                ProjectExpense projectExpense = new ProjectExpense();
-                ExpenseDBProvider.Add(projectExpense);
-                ExpenseDBProvider.Save();
-                ProjectExpenseID = projectExpense.ID;
-            }
-        }
     }
 }

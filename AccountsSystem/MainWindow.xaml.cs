@@ -13,12 +13,14 @@ namespace AccountsSystem
         {
             InitializeComponent();
             ExpenseDBProvider.Open();
-            var projectNames = ExpenseDBProvider.getProjects();
-            projectNames.Insert(0, new Project(projectNames.Count, "未筛选"));
-            projectNames.Add(new Project(projectNames.Count, "+新建项目"));
-            ProjCombo.ItemsSource = projectNames;
+            ProjCombo.ItemsSource = ExpenseDBProvider.getProjects();
             ProjCombo.SelectedIndex = 0;
             UpdateTable();
+        }
+
+        public void InitComponents()
+        {
+
         }
 
         private void ImportBtn_Click(object sender, RoutedEventArgs e)
@@ -41,8 +43,8 @@ namespace AccountsSystem
 
         private void UpdateTable()
         {
-            TransTable.ItemsSource = ExpenseDBProvider.getTransactions();
-            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getBusinessTrans();
+            TransTable.ItemsSource = ExpenseDBProvider.getExpenses();
+            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getProjExpenses();
 
         }
 
@@ -66,7 +68,7 @@ namespace AccountsSystem
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            foreach(ProjectExpenseModel item in ProjExpenseTable.SelectedItems)
+            foreach(ProjectExpenseView item in ProjExpenseTable.SelectedItems)
             {
                 ProjectExpense projectExpense = ExpenseDBProvider.GetProjectExpense(item.ID);
 
@@ -76,7 +78,7 @@ namespace AccountsSystem
             }
 
             ExpenseDBProvider.Save();
-            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getBusinessTrans();
+            ProjExpenseTable.ItemsSource = ExpenseDBProvider.getProjExpenses();
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -87,7 +89,7 @@ namespace AccountsSystem
 
                 if (tabControl.SelectedIndex == 1)
                 {
-                    ProjExpenseTable.ItemsSource = ExpenseDBProvider.getBusinessTrans();
+                    ProjExpenseTable.ItemsSource = ExpenseDBProvider.getProjExpenses();
                 }
             }
         }
@@ -100,17 +102,17 @@ namespace AccountsSystem
             DataGridCellInfo cellInfo = e.AddedCells[0];
             if (cellInfo.Column is DataGridCheckBoxColumn)
             {
-                Transaction trans = cellInfo.Item as Transaction;
-                trans.UpdateBusiness();
+                Expense trans = cellInfo.Item as Expense;
+                //trans.UpdateBusiness();
                 ExpenseDBProvider.Save();
-                TransTable.ItemsSource = ExpenseDBProvider.getTransactions();
+                TransTable.ItemsSource = ExpenseDBProvider.getExpenses();
             }
         }
 
         private void ExportBtn_Click(object sender, RoutedEventArgs e)
         {
             Exporter exporter = new Exporter();
-            exporter.Export(ExpenseDBProvider.getBusinessTrans());
+            exporter.Export(ExpenseDBProvider.getProjExpenses());
 
             MessageBox.Show("导出成功");
         }
@@ -119,7 +121,7 @@ namespace AccountsSystem
         {
             ExpenseDBProvider.Reset();
             ExpenseDBProvider.Save();
-            TransTable.ItemsSource = ExpenseDBProvider.getTransactions();
+            TransTable.ItemsSource = ExpenseDBProvider.getExpenses();
         }
     }
 }

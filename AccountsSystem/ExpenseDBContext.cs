@@ -24,8 +24,8 @@ namespace AccountsSystem
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<Transaction> Transaction { get; set; }
-        public DbSet<Project> Project { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
+        public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectExpense> ProjectExpense { get; set; }
     }
 }

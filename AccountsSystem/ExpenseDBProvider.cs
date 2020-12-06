@@ -29,9 +29,9 @@ namespace AccountsSystem
             return s_DBProvider;
         }
 
-        public static void Add(Transaction transaction)
+        public static void Add(Expense transaction)
         {
-            s_DBProvider.dbContext.Transaction.Add(transaction);
+            s_DBProvider.dbContext.Expenses.Add(transaction);
         }
 
         public static void Add(ProjectExpense projectExpense)
@@ -50,75 +50,49 @@ namespace AccountsSystem
             s_DBProvider.dbContext.SaveChanges();
         }
 
-        public static List<Transaction> getTransactions(bool businessOnly = false)
+        public static List<ExpenseView> getExpenses(bool businessOnly = false)
         {
-            IQueryable<Transaction> result = s_DBProvider.dbContext.Transaction;
+            IQueryable<Expense> expenses = s_DBProvider.dbContext.Expenses;
 
-            if (businessOnly)
-                result = result.Where(t => t.ProjectExpenseID.HasValue);
+            List<ExpenseView> expenseViews = new List<ExpenseView>();
+            foreach (Expense expense in expenses.ToList())
+            {
+                bool isBusiness = s_DBProvider.dbContext.ProjectExpense.Select(t => t.ExpenseID == expense.ID).Count() > 0;
 
-            return result.ToList();
+                if (businessOnly && !isBusiness)
+                    continue;
+
+                expenseViews.Add(new ExpenseView(expense, isBusiness));
+            }
+
+            return expenseViews;
         }
 
         public static List<Project> getProjects()
         {
-            return s_DBProvider.dbContext.Project.ToList();
+            return s_DBProvider.dbContext.Projects.ToList();
         }
 
-        public static List<ProjectExpenseModel> getBusinessTrans(int? projectID = null)
+        public static List<ProjectExpenseView> getProjExpenses(int? projectID = null)
         {
-            IQueryable<ProjectExpense> projectExpense = s_DBProvider.dbContext.ProjectExpense;
-            if (projectID.HasValue)
-                projectExpense = projectExpense.Where(t => t.ProjectID == projectID);
+            IQueryable<ProjectExpense> projectExpenses = s_DBProvider.dbContext.ProjectExpense;
 
-            IQueryable<ProjectExpenseModel> result = projectExpense.Join(s_DBProvider.dbContext.Transaction, expense => expense.ID, trans => trans.ProjectExpenseID,
-                (expense, trans) => new ProjectExpenseModel
-                {
-                    ID = expense.ID,
-                    ProjectID = expense.ProjectID,
-                    Usage = expense.Usage,
-                    TimeStamp = trans.TimeStamp,
-                    Product = trans.Product,
-                    Price = trans.Price,
-                });
-
-            //result =  result.GroupJoin(s_DBProvider.dbContext.Project, expense => expense.ProjectID.Value, proj => proj.ID,
-            //     (expense, proj) => new ProjectExpenseModel
-            //     {
-            //         ID = expense.ID,
-            //         ProjectID = expense.ProjectID,
-            //         Usage = expense.Usage,
-            //         TimeStamp = expense.TimeStamp,
-            //         Product = expense.Product,
-            //         Price = expense.Price,
-            //         ProjectName = proj.FirstOrDefault(t => t.ID == expense.ProjectID.Value).ProjectName
-            //     });
-
-            List<ProjectExpenseModel> list = result.ToList();
-
-            Dictionary<int, string> projects = s_DBProvider.dbContext.Project.ToDictionary(a => a.ID, b => b.ProjectName);
-            foreach (ProjectExpenseModel item in list)
+            List<ProjectExpenseView> result = new List<ProjectExpenseView>();
+            foreach (ProjectExpense projectExpense in projectExpenses)
             {
-                if (item.ProjectID.HasValue)
+                Expense expense = s_DBProvider.dbContext.Expenses.Single(t => t.ID == projectExpense.ExpenseID);
+
+                Project project = null;
+                try
                 {
-                    item.ProjectName = projects[item.ProjectID.Value];
+                    project = s_DBProvider.dbContext.Projects.Single(t => t.ID == projectExpense.ProjectID);
                 }
+                catch { }
+
+                result.Add(new ProjectExpenseView(projectExpense, expense, project));
             }
 
-            // var bbb=       result.GroupJoin(s_DBProvider.dbContext.Project, expense => expense.ProjectID.Value, proj => proj.ID,
-            //(expense, projs) => new { expense, projs }).SelectMany(items => items.projs.DefaultIfEmpty(),
-            //(items, proj) => new ProjectExpenseModel
-            //{
-            //    ID = items.expense.ID,
-            //    ProjectID = items.expense.ProjectID,
-            //    Usage = items.expense.Usage,
-            //    TimeStamp = items.expense.TimeStamp,
-            //    Product = items.expense.Product,
-            //    Price = items.expense.Price,
-            //    ProjectName = proj.ProjectName
-            //});
-
-            return list;
+            return result;
         }
 
         public static ProjectExpense GetProjectExpense(int id)
@@ -128,7 +102,7 @@ namespace AccountsSystem
 
         public static void Reset()
         {
-            s_DBProvider.dbContext.Transaction.RemoveRange(s_DBProvider.dbContext.Transaction);
+            s_DBProvider.dbContext.Expenses.RemoveRange(s_DBProvider.dbContext.Expenses);
             s_DBProvider.dbContext.ProjectExpense.RemoveRange(s_DBProvider.dbContext.ProjectExpense);
         }
 
