@@ -31,7 +31,7 @@ namespace AccountsSystem
             {
                 if (expense.Dirty)
                 {
-                    ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpense(expense.ID);
+                    ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpenseByExpense(expense.ID);
 
                     if (projectExpense == null && expense.IsBusiness)
                     {

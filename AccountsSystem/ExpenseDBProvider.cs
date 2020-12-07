@@ -59,9 +59,9 @@ namespace AccountsSystem
             dbContext.ProjectExpense.Remove(projectExpense);
         }
 
-        public void Save()
+        public bool findProject(string projName)
         {
-            dbContext.SaveChanges();
+            return dbContext.Projects.Where(t => t.ProjectName == projName).Count() > 0;
         }
 
         public List<ExpenseView> getExpenses(bool businessOnly = false)
@@ -109,13 +109,23 @@ namespace AccountsSystem
             return result;
         }
 
-        public ProjectExpense GetProjExpense(int expenseId)
+        public ProjectExpense GetProjExpense(int id)
+        {
+            return dbContext.ProjectExpense.Find(id);
+        }
+
+        public ProjectExpense GetProjExpenseByExpense(int expenseId)
         {
             try
             {
                 return dbContext.ProjectExpense.Single(t => t.ExpenseID == expenseId);
             }
             catch { return null; }
+        }
+
+        public void Save()
+        {
+            dbContext.SaveChanges();
         }
 
         public void Reset()

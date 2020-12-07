@@ -5,27 +5,40 @@ namespace AccountsSystem
 {
     class ProjExpensesTabHandler
     {
+        private ComboBox ProjectCombo;
         private DataGrid ProjectExpenseTable;
 
-        public ProjExpensesTabHandler(DataGrid table)
+        public ProjExpensesTabHandler(ComboBox combo, DataGrid table)
         {
+            ProjectCombo = combo;
+            ProjectCombo.ItemsSource = ExpenseDBProvider.Instance().getProjects();
+
             ProjectExpenseTable = table;
             ProjectExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getProjExpenses();
         }
 
         public void Refresh()
         {
+            ProjectCombo.ItemsSource = ExpenseDBProvider.Instance().getProjects();
             ProjectExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getProjExpenses();
+        }
+
+        public void Save(int projectId, string usage)
+        {
+            foreach (ProjectExpenseView item in ProjectExpenseTable.SelectedItems)
+            {
+                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpense(item.ID);
+
+                projectExpense.ProjectID = projectId;
+                projectExpense.Usage = usage;
+            }
+            ExpenseDBProvider.Instance().Save();
+            Refresh();
         }
 
         public void TabSelected()
         {
             Refresh();
-        }
-
-        public void TabUnSelected()
-        {
-
         }
     }
 }

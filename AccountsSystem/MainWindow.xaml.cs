@@ -18,7 +18,7 @@ namespace AccountsSystem
         {
             InitializeComponent();
             expensesTabHandler = new ExpensesTabHandler(ExpenseTable);
-            projExpensesTabHandler = new ProjExpensesTabHandler(ProjExpenseTable);
+            projExpensesTabHandler = new ProjExpensesTabHandler(ProjCombo, ProjExpenseTable);
             projectTabHandler = new ProjectTabHandler(ProjectsTable);
         }
 
@@ -52,7 +52,7 @@ namespace AccountsSystem
             {
                 dynamic item = e.Row.Item;
                 ComboBox combo = e.EditingElement as ComboBox;
-                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpense(item.ID);
+                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpenseByExpense(item.ID);
                 projectExpense.ProjectID = combo.SelectedIndex;
                 ExpenseDBProvider.Instance().Save();
             }
@@ -66,14 +66,8 @@ namespace AccountsSystem
 
         private void SaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            foreach(ProjectExpenseView item in ProjExpenseTable.SelectedItems)
-            {
-                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpense(item.ID);
-
-                Project project = ProjCombo.SelectedItem as Project;
-                projectExpense.ProjectID = project.ID;
-                projectExpense.Usage = UsageText.Text;
-            }
+            Project project = ProjCombo.SelectedItem as Project;
+            projExpensesTabHandler.Save(project.ID, UsageText.Text);
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -90,21 +84,6 @@ namespace AccountsSystem
                             expensesTabHandler.TabSelected(); break;
                         case 2:
                             projExpensesTabHandler.TabSelected(); break;
-                    }
-                }
-            }
-
-            foreach (var item in e.RemovedItems)
-            {
-                if (item is TabItem)
-                {
-                    TabItem tab = item as TabItem;
-
-                    switch (tab.TabIndex)
-                    {
-                        case 2:
-                            projExpensesTabHandler.TabUnSelected(); break;
-
                     }
                 }
             }
@@ -142,10 +121,22 @@ namespace AccountsSystem
 
         private void ProjSaveBtn_Click(object sender, RoutedEventArgs e)
         {
-            projectTabHandler.Save(ProjNameTxt.Text, ProjDescTxt.Text);
-            projectTabHandler.Refresh();
-            ProjNameTxt.Clear();
-            ProjDescTxt.Clear();
+           Result result = projectTabHandler.Save(ProjNameTxt.Text, ProjDescTxt.Text);
+
+            switch(result)
+            {
+                case Result.Success:
+                    projectTabHandler.Refresh();
+                    ProjNameTxt.Clear();
+                    ProjDescTxt.Clear();
+                    break;
+                case Result.AlreadyExist:
+                    MessageBox.Show("项目已存在");
+                    break;
+                case Result.Fail:
+                    MessageBox.Show("添加失败");
+                    break;
+            }
         }
 
         private void ProjDelBtn_Click(object sender, RoutedEventArgs e)

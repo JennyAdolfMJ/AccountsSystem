@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
 
 namespace AccountsSystem
 {
+    public enum Result
+    {
+        Success,
+        Fail,
+        AlreadyExist
+    }
+
     class ProjectTabHandler
     {
         private DataGrid ProjectTable;
@@ -22,13 +25,27 @@ namespace AccountsSystem
             ProjectTable.ItemsSource = ExpenseDBProvider.Instance().getProjects();
         }
 
-        public void Save(string name, string description)
+        public Result Save(string name, string description)
         {
+            if (ExpenseDBProvider.Instance().findProject(name))
+            {
+                return Result.AlreadyExist;
+            }
+
             Project project = new Project();
             project.ProjectName = name;
             project.ProjectDescription = description;
-            ExpenseDBProvider.Instance().Add(project);
-            ExpenseDBProvider.Instance().Save();
+
+            try
+            {
+                ExpenseDBProvider.Instance().Add(project);
+                ExpenseDBProvider.Instance().Save();
+                return Result.Success;
+            }
+            catch
+            {
+                return Result.Fail;
+            }
         }
 
         public void Delete()
