@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace AccountsSystem
 {
-    public class ExpensesTabHandler
+    class ExpensesTabHandler : TabHandler
     {
         private DataGrid ExpenseTable;
 
@@ -14,7 +14,7 @@ namespace AccountsSystem
             ExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getExpenses();
         }
 
-        public void Refresh()
+        public override void Refresh()
         {
             ExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getExpenses();
         }
@@ -44,6 +44,11 @@ namespace AccountsSystem
                 }
             }
             ExpenseDBProvider.Instance().Save();
+        }
+
+        public void Reset()
+        {
+            ExpenseDBProvider.Instance().Reset();
         }
     }
 }

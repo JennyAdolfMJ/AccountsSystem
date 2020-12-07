@@ -3,14 +3,14 @@ using System.Windows.Controls;
 
 namespace AccountsSystem
 {
-    public enum Result
+    enum Result
     {
         Success,
         Fail,
         AlreadyExist
     }
 
-    class ProjectTabHandler
+    class ProjectTabHandler : TabHandler
     {
         private DataGrid ProjectTable;
 
@@ -20,7 +20,7 @@ namespace AccountsSystem
             ProjectTable.ItemsSource = ExpenseDBProvider.Instance().getProjects();
         }
 
-        public void Refresh()
+        public override void Refresh()
         {
             ProjectTable.ItemsSource = ExpenseDBProvider.Instance().getProjects();
         }

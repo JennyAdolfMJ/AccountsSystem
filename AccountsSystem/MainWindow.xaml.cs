@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Forms = System.Windows.Forms;
 
 namespace AccountsSystem
@@ -13,6 +13,11 @@ namespace AccountsSystem
         private ExpensesTabHandler expensesTabHandler;
         private ProjectTabHandler projectTabHandler;
         private ProjExpensesTabHandler projExpensesTabHandler;
+        private List<TabHandler>  tabHandlers;
+
+        private const int ExpenseTab = 0;
+        private const int ProjectTab = 1;
+        private const int ProjExpenseTab = 2;
 
         public MainWindow()
         {
@@ -20,6 +25,10 @@ namespace AccountsSystem
             expensesTabHandler = new ExpensesTabHandler(ExpenseTable);
             projExpensesTabHandler = new ProjExpensesTabHandler(ProjCombo, ProjExpenseTable);
             projectTabHandler = new ProjectTabHandler(ProjectsTable);
+            tabHandlers = new List<TabHandler>();
+            tabHandlers.Add(new ExpensesTabHandler(ExpenseTable));
+            tabHandlers.Add(new ProjectTabHandler(ProjectsTable));
+            tabHandlers.Add(new ProjExpensesTabHandler(ProjCombo, ProjExpenseTable));
         }
 
         private void ImportBtn_Click(object sender, RoutedEventArgs e)
@@ -38,23 +47,13 @@ namespace AccountsSystem
                 {
                     expensesTabHandler.Refresh();
                     MessageBox.Show("导入成功");
+                    ExportBtn.IsEnabled = true;
+                    ResetBtn.IsEnabled = true;
                 }
                 else
                 {
                     MessageBox.Show("导入失败");
                 }
-            }
-        }
-
-        private void ProjExpenseTable_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
-        {
-            if(e.Column is DataGridComboBoxColumn)
-            {
-                dynamic item = e.Row.Item;
-                ComboBox combo = e.EditingElement as ComboBox;
-                ProjectExpense projectExpense = ExpenseDBProvider.Instance().GetProjExpenseByExpense(item.ID);
-                projectExpense.ProjectID = combo.SelectedIndex;
-                ExpenseDBProvider.Instance().Save();
             }
         }
 
@@ -104,19 +103,30 @@ namespace AccountsSystem
 
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
-            ExpenseDBProvider.Instance().Reset();
-            ExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getExpenses();
+            expensesTabHandler.Reset();
+            switch(tabControl.SelectedIndex)
+            {
+                case 0:
+                    expensesTabHandler.Refresh(); break;
+                case 1:
+                    projectTabHandler.Refresh(); break;
+                case 2:
+                    projExpensesTabHandler.Refresh(); break;
+            }
+            
         }
 
         private void SaveExpenseBtn_Click(object sender, RoutedEventArgs e)
         {
             expensesTabHandler.Save();
+            SaveExpenseBtn.IsEnabled = false;
         }
 
         private void ExpensesTable_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             ExpenseView expenseView = e.Row.Item as ExpenseView;
             expenseView.Dirty = true;
+            SaveExpenseBtn.IsEnabled = true;
         }
 
         private void ProjSaveBtn_Click(object sender, RoutedEventArgs e)

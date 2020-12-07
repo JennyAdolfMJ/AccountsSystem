@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace AccountsSystem
 {
-    class ProjExpensesTabHandler
+    class ProjExpensesTabHandler : TabHandler
     {
         private ComboBox ProjectCombo;
         private DataGrid ProjectExpenseTable;
@@ -17,7 +17,7 @@ namespace AccountsSystem
             ProjectExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getProjExpenses();
         }
 
-        public void Refresh()
+        public override void Refresh()
         {
             ProjectCombo.ItemsSource = ExpenseDBProvider.Instance().getProjects();
             ProjectExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getProjExpenses();
