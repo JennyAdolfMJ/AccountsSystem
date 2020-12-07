@@ -23,6 +23,6 @@ namespace AccountsSystem
             fileStream.Dispose();
         }
 
-        public abstract void Import();
+        public abstract bool Import();
     }
 }

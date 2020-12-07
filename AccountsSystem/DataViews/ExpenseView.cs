@@ -11,6 +11,7 @@ namespace AccountsSystem
             ID = expense.ID;
             TimeStamp = expense.TimeStamp;
             Product = expense.Product;
+            Price = expense.Price;
             Source = expense.Source;
             IsBusiness = isBusiness;
             Dirty = false;

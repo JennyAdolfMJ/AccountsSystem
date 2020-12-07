@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace AccountsSystem
@@ -19,7 +20,7 @@ namespace AccountsSystem
             source = "微信";
         }
 
-        public override void Import()
+        public override bool Import()
         {
             string line = streamReader.ReadLine();
 
@@ -35,6 +36,7 @@ namespace AccountsSystem
                 line = streamReader.ReadLine();
             }
 
+            List<Expense> expenses = new List<Expense>();
             while (line != null)
             {
                 string[] fields = line.Split(',');
@@ -51,10 +53,16 @@ namespace AccountsSystem
                 transaction.Price = float.Parse(fields[(int)CSVFormat.Price].Replace("¥", ""));
                 transaction.Source = source;
 
-                ExpenseDBProvider.Instance().Add(transaction);
+                expenses.Add(transaction);
                 line = streamReader.ReadLine();
             }
+
+            if (expenses.Count == 0)
+                return false;
+
+            ExpenseDBProvider.Instance().AddRange(expenses);
             ExpenseDBProvider.Instance().Save();
+            return true;
         }
     }
 }

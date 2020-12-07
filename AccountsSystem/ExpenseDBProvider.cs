@@ -34,9 +34,9 @@ namespace AccountsSystem
             return s_DBProvider;
         }
 
-        public void Add(Expense expense)
+        public void AddRange(List<Expense> expense)
         {
-            dbContext.Expenses.Add(expense);
+            dbContext.Expenses.AddRange(expense);
         }
 
         public void Add(Project project)

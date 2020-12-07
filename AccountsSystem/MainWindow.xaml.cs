@@ -34,9 +34,15 @@ namespace AccountsSystem
                 else
                     importer = new AlipayImporter(dialog.FileName);
 
-                importer.Import();
-                expensesTabHandler.Refresh();
-                MessageBox.Show("导入成功");
+                if (importer.Import())
+                {
+                    expensesTabHandler.Refresh();
+                    MessageBox.Show("导入成功");
+                }
+                else
+                {
+                    MessageBox.Show("导入失败");
+                }
             }
         }
 
@@ -107,9 +113,14 @@ namespace AccountsSystem
         private void ExportBtn_Click(object sender, RoutedEventArgs e)
         {
             Exporter exporter = new Exporter();
-            exporter.Export(ExpenseDBProvider.Instance().getProjExpenses());
 
-            MessageBox.Show("导出成功");
+            Forms.SaveFileDialog dialog = new Forms.SaveFileDialog();
+            dialog.Filter = "Excel Files|*.xlsx";
+            if (dialog.ShowDialog() == Forms.DialogResult.OK)
+            {
+                exporter.Export(dialog.FileName);
+                MessageBox.Show("导出成功");
+            }
         }
 
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
@@ -133,6 +144,8 @@ namespace AccountsSystem
         {
             projectTabHandler.Save(ProjNameTxt.Text, ProjDescTxt.Text);
             projectTabHandler.Refresh();
+            ProjNameTxt.Clear();
+            ProjDescTxt.Clear();
         }
 
         private void ProjDelBtn_Click(object sender, RoutedEventArgs e)

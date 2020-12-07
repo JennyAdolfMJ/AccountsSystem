@@ -7,7 +7,7 @@ namespace AccountsSystem
 {
     class Exporter
     {
-        public void Export(List<ProjectExpenseView> data)
+        public void Export(string filename)
         {
             Application excel = new Application();
             excel.Visible = false;
@@ -20,9 +20,10 @@ namespace AccountsSystem
             initHeader(worksheet);
 
             int rowIndex = 2;     
-            int colIndex = 1;  
+            int colIndex = 1;
 
-            foreach(ProjectExpenseView projectExpense in data)
+            List<ProjectExpenseView> data = ExpenseDBProvider.Instance().getProjExpenses();
+            foreach (ProjectExpenseView projectExpense in data)
             {
                 worksheet.Cells[rowIndex, colIndex++] = rowIndex - 1;
                 worksheet.Cells[rowIndex, colIndex++] = projectExpense.ProjectName;
@@ -36,9 +37,7 @@ namespace AccountsSystem
 
             worksheet.Columns.AutoFit();
 
-            string filePath = @"D:\Export.xlsx";
-
-            workbook.SaveAs(filePath);
+            workbook.SaveAs(filename);
 
             workbook.Close(true, Type.Missing, Type.Missing);
             excel.Quit();

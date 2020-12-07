@@ -21,7 +21,7 @@ namespace AccountsSystem
             source = "支付宝";
         }
 
-        public override void Import()
+        public override bool Import()
         {
             string line = streamReader.ReadLine();
 
@@ -36,6 +36,7 @@ namespace AccountsSystem
                 line = streamReader.ReadLine();
             }
 
+            List<Expense> expenses = new List<Expense>();
             while (line != null && !line.StartsWith("#"))
             {
                 string[] fields = line.Split(',');
@@ -46,10 +47,17 @@ namespace AccountsSystem
                 transaction.Price = float.Parse(fields[(int)CSVFormat.Price]);
                 transaction.Source = source;
 
-                ExpenseDBProvider.Instance().Add(transaction);
+                expenses.Add(transaction);
                 line = streamReader.ReadLine();
             }
+
+            if (expenses.Count == 0)
+                return false;
+
+            ExpenseDBProvider.Instance().AddRange(expenses);
             ExpenseDBProvider.Instance().Save();
+            return true;
+
         }
     }
 }
