@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using Forms = System.Windows.Forms;
@@ -13,11 +14,6 @@ namespace AccountsSystem
         private ExpensesTabHandler expensesTabHandler;
         private ProjectTabHandler projectTabHandler;
         private ProjExpensesTabHandler projExpensesTabHandler;
-        private List<TabHandler>  tabHandlers;
-
-        private const int ExpenseTab = 0;
-        private const int ProjectTab = 1;
-        private const int ProjExpenseTab = 2;
 
         public MainWindow()
         {
@@ -25,10 +21,8 @@ namespace AccountsSystem
             expensesTabHandler = new ExpensesTabHandler(ExpenseTable);
             projExpensesTabHandler = new ProjExpensesTabHandler(ProjCombo, ProjExpenseTable);
             projectTabHandler = new ProjectTabHandler(ProjectsTable);
-            tabHandlers = new List<TabHandler>();
-            tabHandlers.Add(new ExpensesTabHandler(ExpenseTable));
-            tabHandlers.Add(new ProjectTabHandler(ProjectsTable));
-            tabHandlers.Add(new ProjExpensesTabHandler(ProjCombo, ProjExpenseTable));
+
+            ResetBtn.IsEnabled = ExpenseTable.Items.Count > 0;
         }
 
         private void ImportBtn_Click(object sender, RoutedEventArgs e)
@@ -46,13 +40,12 @@ namespace AccountsSystem
                 if (importer.Import())
                 {
                     expensesTabHandler.Refresh();
-                    MessageBox.Show("导入成功");
-                    ExportBtn.IsEnabled = true;
+                    ShowMessage("导入成功");
                     ResetBtn.IsEnabled = true;
                 }
                 else
                 {
-                    MessageBox.Show("导入失败");
+                    ShowMessage("导入失败", MessageBoxImage.Error);
                 }
             }
         }
@@ -76,14 +69,7 @@ namespace AccountsSystem
                 if(item is TabItem)
                 {
                     TabItem tab = item as TabItem;
-
-                    switch (tab.TabIndex)
-                    {
-                        case 0:
-                            expensesTabHandler.TabSelected(); break;
-                        case 2:
-                            projExpensesTabHandler.TabSelected(); break;
-                    }
+                    GetTabHandler(tab.TabIndex).Refresh();
                 }
             }
         }
@@ -94,26 +80,32 @@ namespace AccountsSystem
 
             Forms.SaveFileDialog dialog = new Forms.SaveFileDialog();
             dialog.Filter = "Excel Files|*.xlsx";
+
+            if (!exporter.CanExport())
+            {
+                ShowMessage("没有数据可以导出", MessageBoxImage.Warning);
+                return;
+            }
+
             if (dialog.ShowDialog() == Forms.DialogResult.OK)
             {
-                exporter.Export(dialog.FileName);
-                MessageBox.Show("导出成功");
+                Exporter.Result result = exporter.Export(dialog.FileName);
+
+                switch (result)
+                {
+                    case Exporter.Result.Success:
+                        ShowMessage("导出成功"); break;
+                    case Exporter.Result.Fail:
+                        ShowMessage("导出失败", MessageBoxImage.Error); break;
+                }
             }
         }
 
         private void ResetBtn_Click(object sender, RoutedEventArgs e)
         {
             expensesTabHandler.Reset();
-            switch(tabControl.SelectedIndex)
-            {
-                case 0:
-                    expensesTabHandler.Refresh(); break;
-                case 1:
-                    projectTabHandler.Refresh(); break;
-                case 2:
-                    projExpensesTabHandler.Refresh(); break;
-            }
-            
+            GetTabHandler(tabControl.SelectedIndex).Refresh();
+            ResetBtn.IsEnabled = false;
         }
 
         private void SaveExpenseBtn_Click(object sender, RoutedEventArgs e)
@@ -141,10 +133,10 @@ namespace AccountsSystem
                     ProjDescTxt.Clear();
                     break;
                 case Result.AlreadyExist:
-                    MessageBox.Show("项目已存在");
+                    ShowMessage("项目已存在", MessageBoxImage.Warning);
                     break;
                 case Result.Fail:
-                    MessageBox.Show("添加失败");
+                    ShowMessage("添加失败", MessageBoxImage.Error);
                     break;
             }
         }
@@ -153,6 +145,25 @@ namespace AccountsSystem
         {
             projectTabHandler.Delete();
             projectTabHandler.Refresh();
+        }
+
+        private TabHandler GetTabHandler(int tabIndex)
+        {
+            switch (tabIndex)
+            {
+                case 0:
+                    return expensesTabHandler;
+                case 1:
+                    return projectTabHandler;
+                case 2:
+                    return projExpensesTabHandler;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        private void ShowMessage(string message, MessageBoxImage image = MessageBoxImage.Information)
+        {
+            MessageBox.Show(this, message, "报销管理", MessageBoxButton.OK, image);
         }
     }
 }

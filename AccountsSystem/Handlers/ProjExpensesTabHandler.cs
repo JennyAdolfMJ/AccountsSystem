@@ -35,10 +35,5 @@ namespace AccountsSystem
             ExpenseDBProvider.Instance().Save();
             Refresh();
         }
-
-        public void TabSelected()
-        {
-            Refresh();
-        }
     }
 }

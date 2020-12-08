@@ -19,11 +19,6 @@ namespace AccountsSystem
             ExpenseTable.ItemsSource = ExpenseDBProvider.Instance().getExpenses();
         }
 
-        public void TabSelected()
-        {
-            Refresh();
-        }
-
         public void Save()
         {
             List<ProjectExpense> projectExpenses = new List<ProjectExpense>();

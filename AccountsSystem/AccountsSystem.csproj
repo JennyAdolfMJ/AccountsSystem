@@ -91,14 +91,12 @@
     <Compile Include="Handlers\ProjExpensesTabHandler.cs" />
     <Compile Include="Handlers\ProjectTabHandler.cs" />
     <Compile Include="Handlers\TabHandler.cs" />
-    <Compile Include="Importer.cs" />
+    <Compile Include="Importer\Importer.cs" />
     <Compile Include="DataModels\Project.cs" />
     <Compile Include="DataModels\Expense.cs" />
-    <Compile Include="AlipayImporter.cs" />
-    <Compile Include="WeChatImporter.cs" />
-    <Compile Include="NewItemDlg.xaml.cs">
-      <DependentUpon>NewItemDlg.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Importer\AlipayImporter.cs" />
+    <Compile Include="Importer\WeChatImporter.cs" />
+    <Compile Include="Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -112,10 +110,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="NewItemDlg.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

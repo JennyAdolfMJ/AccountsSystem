@@ -13,7 +13,7 @@
             </ComboBox>
             <Button x:Name="ImportBtn" Content="导入" Margin="0,0,205,9" Click="ImportBtn_Click" HorizontalAlignment="Right" Width="75" VerticalAlignment="Bottom"/>
             <Button x:Name="ResetBtn" Click="ResetBtn_Click" Content="重置" Margin="0,0,9,9" IsEnabled="False" HorizontalAlignment="Right" Width="75" VerticalAlignment="Bottom"/>
-            <Button x:Name="ExportBtn" Content="导出" Margin="0,18,103,0" IsEnabled="False" VerticalAlignment="Top" Width="75" Click="ExportBtn_Click" HorizontalAlignment="Right" RenderTransformOrigin="-0.947,-0.435"/>
+            <Button x:Name="ExportBtn" Content="导出" Margin="0,18,103,0" VerticalAlignment="Top" Width="75" Click="ExportBtn_Click" HorizontalAlignment="Right" RenderTransformOrigin="-0.947,-0.435"/>
         </Grid>
         <TabControl x:Name="tabControl" SelectionChanged="TabControl_SelectionChanged" Height="Auto" Margin="0,50,0,0">
             <TabItem x:Name="ExpensesTab" Header="交易记录" TabIndex="0">

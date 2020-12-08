@@ -7,40 +7,59 @@ namespace AccountsSystem
 {
     class Exporter
     {
-        public void Export(string filename)
+        internal enum Result
         {
-            Application excel = new Application();
-            excel.Visible = false;
+            Success,
+            Fail
+        }
 
-            Workbooks workbooks = excel.Workbooks;
-            Workbook workbook = workbooks.Add(XlWBATemplate.xlWBATWorksheet);
+        public bool CanExport()
+        {
+            return ExpenseDBProvider.Instance().getProjExpenses().Count > 0;
+        }
 
-            Worksheet worksheet = (Worksheet)workbook.Worksheets[1];
-
-            initHeader(worksheet);
-
-            int rowIndex = 2;     
-            int colIndex = 1;
-
-            List<ProjectExpenseView> data = ExpenseDBProvider.Instance().getProjExpenses();
-            foreach (ProjectExpenseView projectExpense in data)
+        public Result Export(string filename)
+        {
+            try
             {
-                worksheet.Cells[rowIndex, colIndex++] = rowIndex - 1;
-                worksheet.Cells[rowIndex, colIndex++] = projectExpense.ProjectName;
-                worksheet.Cells[rowIndex, colIndex++] = projectExpense.Product;
-                worksheet.Cells[rowIndex, colIndex++] = projectExpense.Usage;
-                worksheet.Cells[rowIndex, colIndex++] = projectExpense.Price;
-                worksheet.Cells[rowIndex, colIndex++] = projectExpense.TimeStamp;
-                rowIndex++;
-                colIndex = 1;
+                Application excel = new Application();
+                excel.Visible = false;
+
+                Workbooks workbooks = excel.Workbooks;
+                Workbook workbook = workbooks.Add(XlWBATemplate.xlWBATWorksheet);
+
+                Worksheet worksheet = (Worksheet)workbook.Worksheets[1];
+
+                initHeader(worksheet);
+
+                int rowIndex = 2;
+                int colIndex = 1;
+                List<ProjectExpenseView> data = ExpenseDBProvider.Instance().getProjExpenses();
+                foreach (ProjectExpenseView projectExpense in data)
+                {
+                    worksheet.Cells[rowIndex, colIndex++] = rowIndex - 1;
+                    worksheet.Cells[rowIndex, colIndex++] = projectExpense.ProjectName;
+                    worksheet.Cells[rowIndex, colIndex++] = projectExpense.Product;
+                    worksheet.Cells[rowIndex, colIndex++] = projectExpense.Usage;
+                    worksheet.Cells[rowIndex, colIndex++] = projectExpense.Price;
+                    worksheet.Cells[rowIndex, colIndex++] = projectExpense.TimeStamp;
+                    rowIndex++;
+                    colIndex = 1;
+                }
+
+                worksheet.Columns.AutoFit();
+
+                workbook.SaveAs(filename);
+
+                workbook.Close(true, Type.Missing, Type.Missing);
+                excel.Quit();
+
+                return Result.Success;
             }
-
-            worksheet.Columns.AutoFit();
-
-            workbook.SaveAs(filename);
-
-            workbook.Close(true, Type.Missing, Type.Missing);
-            excel.Quit();
+            catch
+            {
+                return Result.Fail;
+            }
         }
 
         void initHeader(Worksheet worksheet)
