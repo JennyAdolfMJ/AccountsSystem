@@ -96,7 +96,6 @@
     <Compile Include="DataModels\Expense.cs" />
     <Compile Include="Importer\AlipayImporter.cs" />
     <Compile Include="Importer\WeChatImporter.cs" />
-    <Compile Include="Utils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

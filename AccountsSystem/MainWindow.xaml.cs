@@ -161,6 +161,7 @@ namespace AccountsSystem
                     throw new ArgumentOutOfRangeException();
             }
         }
+
         private void ShowMessage(string message, MessageBoxImage image = MessageBoxImage.Information)
         {
             MessageBox.Show(this, message, "报销管理", MessageBoxButton.OK, image);
